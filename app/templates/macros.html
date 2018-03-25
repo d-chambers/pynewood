@@ -1,0 +1,13 @@
+{# A collection of jinja2 macros #}
+
+{% macro playerlist(form, sep=False) %}
+    <div>
+        {% for post in post_list %}
+            <h2>{{ post.title }}</h2>
+            <article>
+                {{ post.html|safe }}
+            </article>
+        {% endfor %}
+        {% if sep %}<hr>{% endif %}
+    </div>
+{% endmacro %}

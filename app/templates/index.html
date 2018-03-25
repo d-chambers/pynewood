@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+{% from "_formhelpers.html" import render_field %}
+{# these divs center everything #}
+<div id="wrapper">
+    <div id="yourdiv">
+
+        <h3>PyneWood: the pinewood durby tournament manager</h3>
+        <table border="20" align="center">
+                <div class="NewTournament" style="display: table-cell">
+                    <h4 align="center">Create New Tournament</h4>
+                    <form method="POST" action="{{ url_for('index') }}">
+                        {{ new_form.csrf_token }}
+                        {{ render_field(new_form.name) }}
+                        {{ new_form.tour_type.label }}
+                        {{ new_form.tour_type }}
+                        <br><br>
+                        {{ new_form.new_tournament }}
+                    </form>
+                </div>
+                <div class="DeadSpace"style="display: table-cell">
+                    <pre> ________________ </pre>
+                </div>
+                <div class="LoadTournament" style="display: table-cell" align="center">
+                    <h4 align="center">Load Tournament</h4>
+                    <form method="POST" action="{{ url_for('index') }}">
+
+                        {{ load_form.csrf_token }}
+
+                        {{ load_form.name }}
+                        <br><br>
+
+                        {{ load_form.load_tournament }}
+                    </form>
+                </div>
+        </table>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class=flashes>
+                    {% for message in messages %}
+                        <span style="color: #3323ff;">[{{ message }}]
+                    </span>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    </div>
+</div>
+
+<div id="wrapper">
+    <div id="yourdiv">
+
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div id="wrapper">
+    <div id="yourdiv">
+        <h2>Tournament Participants</h2>
+        <form method="POST" action="{{ url_for('create_tournament', tour_type=tour_type, tour_name=tour_name) }}">
+            {{ form.csrf_token }}
+            {{ form.players(rows='10', cols='30', id='larger') }}
+            <br><br>
+            <h2>Tournament Options</h2>
+            {{ form.create_tournament(id="smaller") }}
+        </form>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class=flashes>
+                    {% for message in messages %}
+                        <span style="color: #3323ff;">[{{ message }}]
+                    </span>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    </div>
+</div>
+
+{% endblock %}

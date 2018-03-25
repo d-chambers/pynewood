@@ -1,0 +1,56 @@
+#wrapper {
+    text-align: center;
+}
+
+#yourdiv {
+    display: inline-block;
+}
+
+#nextracers {
+    width: 48%;
+    float: none;
+    align-items: center;
+}
+
+
+#larger {
+    font-size: 25px;
+}
+
+#smaller {
+    font-size: 20px;
+}
+
+
+table {
+    width: 200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+
+/* -------- Run Tournament Page Styles ------------ */
+#container {
+    border: 2px dashed #444;
+    height: 125px;
+    -ms-text-justify: distribute-all-lines;
+    text-justify: distribute-all-lines;
+    text-align: center;
+    min-width: 612px;
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+.box1 {
+    width: 150px;
+    height: 125px;
+    vertical-align: top;
+    display: inline-block;
+    *display: inline;
+    zoom: 1;
+    horiz-align: center;
+}
+
