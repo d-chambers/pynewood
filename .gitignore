@@ -73,18 +73,6 @@ target/
 *.swp
 .DS_store*
 
-# wavebank specifics
-tests/test_data/TA_archive/TA/*
-.index.h5
-tests/test_data/kem_archive/TA/*
-tests/test_data/kem_archive/stations/*
+# pynewood stuff
+tournaments/*.pkl
 
-# test data sets
-obsplus/datasets/**/*.mseed
-obsplus/datasets/**/stations
-obsplus/datasets/**/.index
-
-# shelve stuff
-*.dat
-*.dir
-*.bak

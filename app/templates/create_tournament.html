@@ -3,6 +3,7 @@
 {% block body %}
 <div id="wrapper">
     <div id="yourdiv">
+        <div>{{ tournament_type }}</div>
         <h2>Tournament Participants</h2>
         <form method="POST" action="{{ url_for('create_tournament', tour_type=tour_type, tour_name=tour_name) }}">
             {{ form.csrf_token }}

@@ -6,7 +6,7 @@ import ast
 
 
 import wtforms
-from flask import render_template, redirect, flash, url_for
+from flask import render_template, redirect, flash, url_for, request
 from flask.ext.wtf import FlaskForm
 from wtforms.validators import DataRequired, NumberRange
 
@@ -15,17 +15,21 @@ from app import app
 
 TOURNAMENT = {}  # a dict for holding a tournament object (keys are names)
 TOUR_TYPE = {}  # a dict storing types of tournaments for each name
+DEFAULT_PLAYER_LIST = ('jared', 'jeff', 'topher', 'ryan', 'don', 'maria',
+                       'miguel', 'joe', 'sue')
 
 
-def make_up_first_form(matches):
+def make_up_first_form(current_players):
     """ return a form for entering times of those who are up """
 
     class UpNowForm(FlaskForm):
         submit = wtforms.SubmitField(label='Submit')
 
-    for num, name in enumerate(matches[0]):
-        num = wtforms.IntegerField(label=name,
-                                   validators=[NumberRange(min=0)])
+    for num, player in enumerate(current_players):
+        name = f'player{num}'
+        num = wtforms.DecimalField(label=player,
+                                   validators=[NumberRange(min=0),
+                                               DataRequired()])
         setattr(UpNowForm, name, num)
 
     return UpNowForm()
@@ -54,29 +58,54 @@ class LoadTournamentForm(FlaskForm):
 
 class CreateTournament(FlaskForm):
     """ a simple form for text area input of the team """
-    players = wtforms.TextAreaField(label='player list')
+    default = '\n'.join(DEFAULT_PLAYER_LIST)
+    players = wtforms.TextAreaField(label='player list', default=default)
     create_tournament = wtforms.SubmitField(label='Create Tournament')
 
 
 # -------------------- Routes
 
 
-@app.route('/tournament_<tour_name>_<players>')
+@app.route('/tournament_<tour_name>_<players>', methods=['GET', 'POST'])
 def run_tournament(tour_name, players='', results=None):
 
-    # check it tournament is in memory, it not load it.
     player_list = ast.literal_eval(players)
 
+    # check it tournament is in memory, it not load it.
     if not tour_name in TOURNAMENT:
         cls = pn.get_tournaments()[TOUR_TYPE[tour_name]]
         TOURNAMENT[tour_name] = cls(players=player_list)
-
     tour = TOURNAMENT[tour_name]
-    # get the next 3 groups
-    matches = tour.get_next_matchups(3)
-    form = make_up_first_form(matches)
-    return render_template('run_tournamnet.html', matches=matches, form=form,
-                           tour_name=tour_name, players=player_list)
+    matches = tour.get_next_matchups(2)
+
+    # create form
+    form = make_up_first_form(matches[0] if len(matches) else [])
+
+    # data is being submitted
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            # set values
+            if len(matches):
+                for num, player in enumerate(matches[0]):
+                    name = f'player{num}'
+                    val = float(getattr(form, name).data)
+                    tour.set_time(player, val)
+                # redirect to input to clear form state
+                kwargs = dict(tour_name=tour_name, players=players)
+                tour.write('tournaments/tour_name.pkl')
+                return redirect(url_for('run_tournament', **kwargs))
+            else:
+                flash("Tournament complete!")
+        else:
+            flash("All fields must be numbers greater than 0")
+
+    # get table to display
+    df = tour.get_ratings().round(decimals=3)
+    car_table = df.to_html(classes='aTable')
+
+    kwargs = dict(matches=matches, form=form, tour_name=tour_name,
+                  players=player_list, car_table=car_table)
+    return render_template('run_tournamnet.html', **kwargs)
 
 
 @app.route('/create_tournament_<tour_type>_<tour_name>', methods=['GET', 'POST'])
@@ -111,6 +140,8 @@ def load_tournament(name):
 def index():
     new_form = NewTournamentForm()
     load_form = LoadTournamentForm()
+
+    import pdb; pdb.set_trace()
 
     # launch into loading new tournament
     if new_form.validate_on_submit():

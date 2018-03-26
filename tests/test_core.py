@@ -3,8 +3,15 @@
 """
 
 import pytest
+import numpy as np
 
 from pynewood import LimitedRound
+import pandas as pd
+
+random_state = np.random.RandomState(13)
+
+# an array of simulated times
+randon_times = random_state.rand(1000) + 4.0
 
 
 @pytest.fixture
@@ -23,6 +30,24 @@ class TestLimitedRound1:
         """ return a limited round instance """
         return LimitedRound(player_list, players_at_once=self.players_at_once,
                             number_of_plays=self.number_of_plays)
+
+    @pytest.fixture
+    def lr_with_times(self, player_list):
+        """ return a limited round instance with times filled in """
+        lr = LimitedRound(player_list, players_at_once=self.players_at_once,
+                          number_of_plays=self.number_of_plays)
+        lr.df.loc[:, 'time'] = randon_times[:len(lr.df)]
+        return lr
+
+    @pytest.fixture
+    def lr_partial_times(self, player_list):
+        """ return a limited round instance some times filled in """
+        lr = LimitedRound(player_list, players_at_once=self.players_at_once,
+                          number_of_plays=self.number_of_plays)
+
+
+        lr.df.loc[:10, 'time'] = randon_times[:11]
+        return lr
 
     # tests
     def test_each_player_shows_up_n_times(self, limited_round):
@@ -56,6 +81,32 @@ class TestLimitedRound1:
         with pytest.raises(ValueError):
             limited_round.set_time('jeff', .4)
 
+    def test_empty_ratings(self, limited_round):
+        """ ratings with no input times should return an empty list """
+        ranks = limited_round.get_ratings()
+        assert not len(ranks)
+        assert isinstance(ranks, pd.DataFrame)
 
+    def test_ratings(self, lr_with_times):
+        """ return a ranking table """
+        ranks = lr_with_times.get_ratings()
+        assert len(ranks)
+        assert isinstance(ranks, pd.DataFrame)
 
+    def test_partial_ratings(self, lr_partial_times):
+        """ test that partially filled out ratings still works """
+        ranks = lr_partial_times.get_ratings()
+        assert len(ranks)
+        assert isinstance(ranks, pd.DataFrame)
 
+    def test_save_and_load(self, limited_round, tmpdir):
+        """ ensure limited_round can be saved and loaded """
+        lr1 = limited_round
+        fi = tmpdir.mkdir("sub").join('saved.pkl')
+        lr1.save(fi)
+        lr2 = lr1.load(fi)
+        # ensure the dataframes are equal, skip null
+        dfs_equal = (lr1.df == lr2.df) | (lr1.df.isnull() | lr2.df.isnull())
+        assert (dfs_equal).all().all()
+        # ensure other attrs are equal
+        assert lr1.players == lr2.players

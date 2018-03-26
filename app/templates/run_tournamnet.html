@@ -1,28 +1,38 @@
 {% extends "base.html" %}
-{% block body %}
 {% from "_formhelpers.html" import render_field %}
+{% from "_formhelpers.html" import render_field_vertical %}
+
+{% block body %}
 
 <div id="wrapper">
-    <div id="container">
-        {% for heat in matches %}
-            <div class="box1">
-            {% if heat == matches[0] %}
-                <form method="POST" action="{{ url_for('run_tournament', tour_name=tour_name, players=players) }}">
-                    {{ form.csrf_token }}
-                    {% for player in heat %}
-                        {{ render_field(form[player]) }}
-                    {% endfor %}
-                    {{ form.submit }}
-                </form>
-            {%  else %}
-                {% for player in heat %}
-                    {{ player }}
+    <form method="POST" action="{{ url_for('run_tournament', tour_name=tour_name, players=players) }}">
+        <div>
+            {{ form.csrf_token }}
+            {% for player in matches[0] %}
+                {{ form['player' + loop.index0|string()].label() }}
+                {{ form['player' + loop.index0|string()]() }}
+            {% endfor %}
+            <br><br>
+        </div>
+            {{ form.submit }}
+            <br><br>
+    </form>
+    {# Flash messages #}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class=flashes>
+                {% for message in messages %}
+                    <span style="color: #ff1826;">[{{ message }}]
+                </span>
                 {% endfor %}
-            {% endif %}
-            </div>
-        {% endfor %}
-    </div>
+            </ul>
+        {% endif %}
+    {% endwith %}
+    {# State who is up next #}
+    <div class="c758">Up Next: {{ matches[1]|join(', ') }}</div>
+    <br><br>
+    {{ car_table | safe }}
 </div>
 
-
 {% endblock %}
+
