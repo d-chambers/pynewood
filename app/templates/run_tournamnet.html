@@ -6,6 +6,8 @@
 
 <div id="wrapper">
     <form method="POST" action="{{ url_for('run_tournament', tour_name=tour_name, players=players) }}">
+        <div class="c805">{{ tour_name }}</div>
+        <hr>
         <div>
             {{ form.csrf_token }}
             {% for player in matches[0] %}

@@ -27,7 +27,8 @@ class Tournament:
         with open(path, 'wb') as fi:
             pickle.dump(self, fi)
 
-    def load(self, path):
+    @staticmethod
+    def load(path):
         # return pickle.load(path)
         with open(path, 'rb') as fi:
             return pickle.load(fi)

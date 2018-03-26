@@ -51,6 +51,29 @@ body{
   font-weight:700;
 }
 
+.c805{
+  padding-top:5px;
+  padding-bottom:30px;
+  text-align:center;
+  font-size:35px;
+  line-height:1px;
+  color:rgba(62,66,10,0.84);
+  font-family:Georgia, serif;
+  font-weight:600;
+}
+
+.c825{
+  padding-top:5px;
+  padding-bottom:10px;
+  text-align:center;
+  font-size:23px;
+  line-height:1px;
+  color:rgba(62,66,10,0.84);
+  font-family:Georgia, serif;
+  font-weight:600;
+}
+
+
 .aTable {
     width: 800px;
     border-spacing: 2px;
@@ -110,16 +133,7 @@ body{
 }
 
 
-.c825{
-  padding-top:5px;
-  padding-bottom:10px;
-  text-align:center;
-  font-size:23px;
-  line-height:1px;
-  color:rgba(62,66,10,0.84);
-  font-family:Georgia, serif;
-  font-weight:600;
-}
+
 
 
 

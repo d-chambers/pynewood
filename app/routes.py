@@ -3,7 +3,7 @@ Routes for running pynewood as a flask app
 """
 
 import ast
-
+from pathlib import Path
 
 import wtforms
 from flask import render_template, redirect, flash, url_for, request
@@ -17,7 +17,12 @@ TOURNAMENT = {}  # a dict for holding a tournament object (keys are names)
 TOUR_TYPE = {}  # a dict storing types of tournaments for each name
 DEFAULT_PLAYER_LIST = ('jared', 'jeff', 'topher', 'ryan', 'don', 'maria',
                        'miguel', 'joe', 'sue')
+here = Path('.')
+tournament_path = here / 'tournaments'
 
+# map tournament name to file
+SAVED_TOURNAMENTS = {x.name.split('.')[0]: str(x)
+                     for x in tournament_path.glob('*pkl')}
 
 def make_up_first_form(current_players):
     """ return a form for entering times of those who are up """
@@ -51,7 +56,7 @@ class NewTournamentForm(FlaskForm):
 
 class LoadTournamentForm(FlaskForm):
     """ A form for creating a new tournament """
-    choices = [('zoom zoom', 'zoom')]
+    choices = [(x, x) for x in SAVED_TOURNAMENTS]
     name = wtforms.SelectField(label='Saved Tournaments', choices=choices)
     load_tournament = wtforms.SubmitField(label='Load Tournament')
 
@@ -66,16 +71,18 @@ class CreateTournament(FlaskForm):
 # -------------------- Routes
 
 
-@app.route('/tournament_<tour_name>_<players>', methods=['GET', 'POST'])
-def run_tournament(tour_name, players='', results=None):
+@app.route('/tournament_<tour_name>', methods=['GET', 'POST'])
+def run_tournament(tour_name):
+    """ page for running the tournament """
 
-    player_list = ast.literal_eval(players)
+    # if tournament isnot loaded decide to load or create
+    if tour_name in TOURNAMENT:
+        tour = TOURNAMENT[tour_name]
+    elif tour_name in SAVED_TOURNAMENTS:
+        return redirect(url_for('load_tournament', tour_name=tour_name))
+    else:
+        return redirect(url_for('index'))
 
-    # check it tournament is in memory, it not load it.
-    if not tour_name in TOURNAMENT:
-        cls = pn.get_tournaments()[TOUR_TYPE[tour_name]]
-        TOURNAMENT[tour_name] = cls(players=player_list)
-    tour = TOURNAMENT[tour_name]
     matches = tour.get_next_matchups(2)
 
     # create form
@@ -91,8 +98,8 @@ def run_tournament(tour_name, players='', results=None):
                     val = float(getattr(form, name).data)
                     tour.set_time(player, val)
                 # redirect to input to clear form state
-                kwargs = dict(tour_name=tour_name, players=players)
-                tour.write('tournaments/tour_name.pkl')
+                kwargs = dict(tour_name=tour_name)
+                tour.save(str(tournament_path / (tour_name + '.pkl')))
                 return redirect(url_for('run_tournament', **kwargs))
             else:
                 flash("Tournament complete!")
@@ -104,7 +111,7 @@ def run_tournament(tour_name, players='', results=None):
     car_table = df.to_html(classes='aTable')
 
     kwargs = dict(matches=matches, form=form, tour_name=tour_name,
-                  players=player_list, car_table=car_table)
+                  car_table=car_table)
     return render_template('run_tournamnet.html', **kwargs)
 
 
@@ -115,24 +122,28 @@ def create_tournament(tour_type, tour_name):
     form = CreateTournament()
 
     if form.validate_on_submit():
+        # get players from form
         players = form.players.data.splitlines()
-        kwargs = dict(players=players, tour_name=tour_name,)
-        # cache tour type
-        TOUR_TYPE[tour_name] = tour_type
         if len(players) < 2:
             flash('You must input at least two players!')
-
-        else:
-            return redirect(url_for('run_tournament', **kwargs))
+        # cache tour type
+        TOUR_TYPE[tour_name] = tour_type
+        # create tournament and stash
+        cls = pn.get_tournaments()[TOUR_TYPE[tour_name]]
+        TOURNAMENT[tour_name] = cls(players=players)
+        return redirect(url_for('run_tournament', tour_name=tour_name))
 
     return render_template('create_tournament.html', form=form,
                            tour_type=tour_type, tour_name=tour_name)
 
 
-@app.route('/load_tournament/<name>')
-def load_tournament(name):
-    return f'loading tournament: {name}'
-    render_template('create_tournament.html')
+@app.route('/load_tournament/<tour_name>')
+def load_tournament(tour_name):
+    """ load the tournament, head over to run_tournament """
+    if not tour_name in TOURNAMENT:
+        path = SAVED_TOURNAMENTS[tour_name]
+        TOURNAMENT[tour_name] = pn.LimitedRound.load(path)
+    return redirect(url_for('run_tournament', tour_name=tour_name))
 
 
 @app.route('/')
@@ -140,8 +151,6 @@ def load_tournament(name):
 def index():
     new_form = NewTournamentForm()
     load_form = LoadTournamentForm()
-
-    import pdb; pdb.set_trace()
 
     # launch into loading new tournament
     if new_form.validate_on_submit():
@@ -152,8 +161,9 @@ def index():
 
     if load_form.validate_on_submit():
         if load_form.load_tournament.data:
-            flash(f'loading tournament: {new_form.name.data}')
-            return redirect(url_for('load_tournament'))
+            name = load_form.name.data
+            flash(f'loading tournament: {name}')
+            return redirect(url_for('load_tournament', tour_name=name))
 
     return render_template('index.html', new_form=new_form,
                            load_form=load_form)
