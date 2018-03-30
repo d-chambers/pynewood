@@ -46,7 +46,7 @@ class LimitedRound(Tournament):
     """ Class to run each participant a certain number of times """
 
     def __init__(self, players: Sequence[Hashable], players_at_once: int = 4,
-                 number_of_plays: int = 3, rank_stat='min'):
+                 number_of_plays: int = 4, rank_stat='min'):
         """
 
         Parameters
@@ -119,6 +119,10 @@ class LimitedRound(Tournament):
         df.sort_values(self.rank_stat, inplace=True)
         df.insert(0, column='rank', value=range(1, len(df) + 1))
         return df.rename(columns={'size': 'races'})
+
+    def save(self, path):
+        super().save(path)
+        self.df.to_csv('backup.csv')
 
 
 def get_tournaments():
