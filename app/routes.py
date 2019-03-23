@@ -15,8 +15,10 @@ from app import app
 
 TOURNAMENT = {}  # a dict for holding a tournament object (keys are names)
 TOUR_TYPE = {}  # a dict storing types of tournaments for each name
-DEFAULT_PLAYER_LIST = ('jared', 'jeff', 'topher', 'ryan', 'don', 'maria',
-                       'miguel', 'joe', 'sue')
+DEFAULT_PLAYER_LIST = ('Bryton Borg', 'Garret West', 'Logan Burt',
+                       'Josh Oliphant', 'Josh Olsen', 'Jesse Burt',
+                       'Logan Gardiner', 'Jaxon Pharis', 'Jimmy Heldrum',
+                       'Hadeon Pawluk', 'Brayden Jamison', 'Liam Ordaz')
 here = Path('.')
 tournament_path = here / 'tournaments'
 
@@ -130,7 +132,11 @@ def create_tournament(tour_type, tour_name):
         TOUR_TYPE[tour_name] = tour_type
         # create tournament and stash
         cls = pn.get_tournaments()[TOUR_TYPE[tour_name]]
-        TOURNAMENT[tour_name] = cls(players=players)
+        tour = cls(players=players)
+        unique = tour.get_next_matchups(100)
+        while any([len(x) != len(set(x)) for x in unique]):
+            tour = cls(players=players)
+        TOURNAMENT[tour_name] = tour
         return redirect(url_for('run_tournament', tour_name=tour_name))
 
     return render_template('create_tournament.html', form=form,
