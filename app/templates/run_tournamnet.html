@@ -8,11 +8,15 @@
     <form method="POST" action="{{ url_for('run_tournament', tour_name=tour_name, players=players) }}">
         <div class="c805">{{ tour_name }}</div>
         <hr>
-        <div>
+        <div style="height:100%; width:100%; overflow: hidden; display: flex">
+
             {{ form.csrf_token }}
             {% for player in matches[0] %}
+                <div style="float: left; width:25%; display: inline-flex";>
                 {{ form['player' + loop.index0|string()].label() }}
                 {{ form['player' + loop.index0|string()]() }}
+                </div>
+
             {% endfor %}
             <br><br>
         </div>
