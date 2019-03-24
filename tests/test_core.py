@@ -1,12 +1,13 @@
 """
 
 """
+from pathlib import Path
 
-import pytest
 import numpy as np
+import pandas as pd
+import pytest
 
 from pynewood import LimitedRound
-import pandas as pd
 
 random_state = np.random.RandomState(13)
 
@@ -17,36 +18,46 @@ randon_times = random_state.rand(1000) + 4.0
 @pytest.fixture
 def player_list():
     """ return a list of players """
-    return ('jared', 'jeff', 'topher', 'ryan', 'don', 'maria', 'miguel', 'joe')
+    return "jared", "jeff", "topher", "ryan", "don", "maria", "miguel", "joe"
 
 
 class TestLimitedRound1:
-
     number_of_plays = 3
     players_at_once = 4
 
     @pytest.fixture
     def limited_round(self, player_list):
         """ return a limited round instance """
-        return LimitedRound(player_list, players_at_once=self.players_at_once,
-                            number_of_plays=self.number_of_plays)
+        return LimitedRound(
+            player_list,
+            name="test_limited",
+            players_at_once=self.players_at_once,
+            number_of_plays=self.number_of_plays,
+        )
 
     @pytest.fixture
     def lr_with_times(self, player_list):
         """ return a limited round instance with times filled in """
-        lr = LimitedRound(player_list, players_at_once=self.players_at_once,
-                          number_of_plays=self.number_of_plays)
-        lr.df.loc[:, 'time'] = randon_times[:len(lr.df)]
+        lr = LimitedRound(
+            player_list,
+            name="test_limited_with_times",
+            players_at_once=self.players_at_once,
+            number_of_plays=self.number_of_plays,
+        )
+        lr.df.loc[:, "time"] = randon_times[: len(lr.df)]
         return lr
 
     @pytest.fixture
     def lr_partial_times(self, player_list):
         """ return a limited round instance some times filled in """
-        lr = LimitedRound(player_list, players_at_once=self.players_at_once,
-                          number_of_plays=self.number_of_plays)
+        lr = LimitedRound(
+            player_list,
+            name="test_limited_partial_time",
+            players_at_once=self.players_at_once,
+            number_of_plays=self.number_of_plays,
+        )
 
-
-        lr.df.loc[:10, 'time'] = randon_times[:11]
+        lr.df.loc[:10, "time"] = randon_times[:11]
         return lr
 
     # tests
@@ -66,20 +77,20 @@ class TestLimitedRound1:
         """ ensure the setting score works """
         # set with an explicit round
         df = limited_round.df
-        limited_round.set_time('jeff', .121, round=2)
-        selected = (df['player'] == 'jeff') & (df['round'] == 2)
-        assert (df.loc[selected, 'time'] == .121).all()
+        limited_round.set_time("jeff", .121, round=2)
+        selected = (df["player"] == "jeff") & (df["round"] == 2)
+        assert (df.loc[selected, "time"] == .121).all()
 
         # set with no explicit round
-        limited_round.set_time('jeff', .15)
-        selected = (df['player'] == 'jeff') & (df['round'] == 0)
-        assert (df.loc[selected, 'time'] == .15).all()
+        limited_round.set_time("jeff", .15)
+        selected = (df["player"] == "jeff") & (df["round"] == 0)
+        assert (df.loc[selected, "time"] == .15).all()
 
         # set last and assert 3rd raises
-        limited_round.set_time('jeff', .5)
+        limited_round.set_time("jeff", .5)
 
         with pytest.raises(ValueError):
-            limited_round.set_time('jeff', .4)
+            limited_round.set_time("jeff", .4)
 
     def test_empty_ratings(self, limited_round):
         """ ratings with no input times should return an empty list """
@@ -102,9 +113,9 @@ class TestLimitedRound1:
     def test_save_and_load(self, limited_round, tmpdir):
         """ ensure limited_round can be saved and loaded """
         lr1 = limited_round
-        fi = tmpdir.mkdir("sub").join('saved.pkl')
-        lr1.save(fi)
-        lr2 = lr1.load(fi)
+        directory_path = Path(tmpdir.mkdir("sub"))
+        lr1.save(path=directory_path)
+        lr2 = lr1.load(lr1.name, path=directory_path)
         # ensure the dataframes are equal, skip null
         dfs_equal = (lr1.df == lr2.df) | (lr1.df.isnull() | lr2.df.isnull())
         assert (dfs_equal).all().all()

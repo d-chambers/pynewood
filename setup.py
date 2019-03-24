@@ -9,53 +9,42 @@ HERE = dirname(abspath(__file__))
 
 
 # --- get version
-with open(join(HERE, 'pynewood', 'version.py'), 'r') as fi:
-    content = fi.read().split('=')[-1].strip()
-    __version__ = content.replace('"', '').replace("'", '')
+with open(join(HERE, "pynewood", "version.py"), "r") as fi:
+    content = fi.read().split("=")[-1].strip()
+    __version__ = content.replace('"', "").replace("'", "")
 
 # --- get readme
-with open('README.rst') as readme_file:
+with open("README.rst") as readme_file:
     readme = readme_file.read()
 
 
-requirements = [
-    'numpy',
-    'pandas',
-    'networkx',
-]
+requirements = ["numpy", "pandas", "networkx", "flask-wtf"]
 
-test_requirements = [
-    'pytest',
-]
+test_requirements = ["pytest", "pytest-flask"]
 
-setup_requirements = [
-    'pytest-runner',
-    'nbsphinx',
-    'numpydoc'
-]
+setup_requirements = ["pytest-runner", "nbsphinx", "numpydoc"]
 
 setup(
-    name='pynewood',
+    name="pynewood",
     version=__version__,
-    description="A pinewood durby tournament manager",
+    description="A pinewood derby tournament manager",
     long_description=readme,
     author="Derrick Chambers",
-    author_email='djachambeador@gmail.com',
-    url='https://github.com/d-chambers/pynewood',
-    package_dir={'pynewood':
-                 'pynewood'},
+    author_email="djachambeador@gmail.com",
+    url="https://github.com/d-chambers/pynewood",
+    package_dir={"pynewood": "pynewood"},
     include_package_data=True,
     install_requires=requirements,
     license="BSD",
     zip_safe=False,
-    keywords='racing',
+    keywords="racing",
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License',
-        'Programming Language :: Python :: 3.6',
+        "Development Status :: 2 - Pre-Alpha",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: BSD License",
+        "Programming Language :: Python :: 3.6",
     ],
-    test_suite='tests',
+    test_suite="tests",
     tests_require=test_requirements,
     setup_requires=setup_requirements,
 )

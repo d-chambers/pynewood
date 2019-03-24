@@ -5,8 +5,8 @@
 {% block body %}
 
 <div id="wrapper">
-    <form method="POST" action="{{ url_for('run_tournament', tour_name=tour_name, players=players) }}">
-        <div class="c805">{{ tour_name }}</div>
+    <form method="POST" action="{{ url_for('run_tournament', name=name, players=players) }}">
+        <div class="c805">{{ name }}</div>
         <hr>
         <div style="height:100%; width:100%; overflow: hidden; display: flex">
 
