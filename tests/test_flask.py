@@ -16,7 +16,7 @@ from pynewood.utils import (
 @pytest.fixture
 def tourn_name():
     """ return a random tournament name. """
-    return ''.join([random.choice(string.ascii_letters) for _ in range(10)])
+    return "".join([random.choice(string.ascii_letters) for _ in range(10)])
 
 
 @pytest.fixture
@@ -41,7 +41,6 @@ class TestIndex:
 
 
 class TestCreateTournament:
-
     def test_create_new_tournament(self, tournament):
         """ Create a new tournament with a different default name. """
         assert tournament.name in get_saved_tournament_names()
@@ -49,6 +48,8 @@ class TestCreateTournament:
 
 class TestRunStandardTournmant:
     """ Tests for running basic tournament """
+
+    # utility functions
 
     @staticmethod
     def current_df(tournament_name):
@@ -69,13 +70,17 @@ class TestRunStandardTournmant:
                 data[player_name] = 2.0
             client.post(url, data=data, follow_redirects=True)
 
+    # fixtures
+
     @pytest.fixture
     def run_tournament(self, client, tournament):
         """ start running the tournament. """
         url = f"/tournament_{tournament.name}"
         rv = client.get(url)
-        assert '200' in str(rv)
+        assert "200" in str(rv)
         assert rv
+
+    # tests
 
     def test_run_tournament_scenario_1(self, client, tournament):
         """ First scenario for running a tournament """
@@ -83,16 +88,16 @@ class TestRunStandardTournmant:
         players_per_round = tournament.players_per_round
         # first make sure the df has no time values
         df = self.current_df(name)
-        assert df['time'].isnull().all()
+        assert df["time"].isnull().all()
         # now submit times for first round, make sure correct number of rows
         # were updated.
         self.submit_times(name, client)
         df = self.current_df(name)
-        non_null_count = (~df.loc[:, 'time'].isnull()).sum()
+        non_null_count = (~df.loc[:, "time"].isnull()).sum()
         assert non_null_count == players_per_round
         # next run tournament to completed
-        remaining_rounds = (df['time'].isnull().sum() // players_per_round) + 1
+        remaining_rounds = (df["time"].isnull().sum() // players_per_round) + 1
         self.submit_times(name, client, remaining_rounds)
         # make sure all times are filled out
         df = self.current_df(name)
-        assert not df['time'].isnull().any()
+        assert not df["time"].isnull().any()

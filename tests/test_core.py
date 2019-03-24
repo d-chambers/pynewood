@@ -1,5 +1,5 @@
 """
-
+Tests for core structures.
 """
 from pathlib import Path
 
@@ -8,6 +8,7 @@ import pandas as pd
 import pytest
 
 from pynewood import LimitedRound
+from pynewood.exceptions import InvalidTournamentError
 
 random_state = np.random.RandomState(13)
 
@@ -21,6 +22,36 @@ def player_list():
     return "jared", "jeff", "topher", "ryan", "don", "maria", "miguel", "joe"
 
 
+@pytest.fixture
+def basic_limited_round(player_list):
+    """ return a limited round instance """
+    return LimitedRound(player_list, name="test_limited_basic")
+
+
+class TestBasics:
+    """ Basic tournament tests. """
+
+    def test_bad_tournament(self):
+        """ make sure the InvalidTournamentError is raised on bad configs. """
+        with pytest.raises(InvalidTournamentError):
+            # it is not possible not to have one player playing him/her self
+            players = ["bob", "bill", "sue"]
+            LimitedRound(players=players, name="sometest", players_at_once=4)
+
+    def test_get_item(self, basic_limited_round, player_list):
+        """ Tests for get items. """
+        # and int should return a df of a particular round
+        df = basic_limited_round[0]
+        unique_round = df["round"].unique()
+        assert len(unique_round) == 1
+        assert unique_round[0] == 0
+        # a str should return a players df
+        df = basic_limited_round[player_list[0]]
+        unique_players = df["player"].unique()
+        assert len(unique_players) == 1
+        assert unique_players[0] == player_list[0]
+
+
 class TestLimitedRound1:
     number_of_plays = 3
     players_at_once = 4
@@ -30,7 +61,7 @@ class TestLimitedRound1:
         """ return a limited round instance """
         return LimitedRound(
             player_list,
-            name="test_limited",
+            name="limited_round_test_1",
             players_at_once=self.players_at_once,
             number_of_plays=self.number_of_plays,
         )

@@ -10,9 +10,9 @@ from flask_wtf import FlaskForm
 from wtforms.validators import DataRequired, NumberRange
 
 import pynewood as pn
-from pynewood.utils import get_saved_tournament_names, load_tournament
 from app import app
 from app.utils import _make_kwargs
+from pynewood.utils import get_saved_tournament_names, load_tournament
 
 TOURNAMENT = {}  # {tournament_name: tournament}
 TOUR_TYPE = {}  # {tournament_name: tournament_type}

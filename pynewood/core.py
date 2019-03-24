@@ -127,8 +127,9 @@ class LimitedRound(Tournament):
         return df
 
     def __getitem__(self, item):
+        # TODO this is a bad idea, remove it in favor of explicit methods
         if isinstance(item, int):
-            return self.df[self.df.round == item]
+            return self.df[self.df["round"] == item]
         elif isinstance(item, str):
             return self.df[self.df["player"] == item]
 

@@ -60,8 +60,8 @@ class TournamentOption:
             assert isinstance(value, self.type)
         if self.valid_values:
             assert value in self.valid_values
-        if self.validator is not None and callable(self.validator):
-            assert self.validator(value, instance=instance)
+        # if self.validator is not None and callable(self.validator):
+        #     assert self.validator(value, instance=instance)
         # set attr if they pass or are not applicable
         setattr(instance, self.name, value)
 
