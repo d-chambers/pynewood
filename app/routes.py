@@ -107,12 +107,12 @@ def run_tournament(name):
             # set values
             if len(matches):
                 for num, player in enumerate(matches[0]):
-                    name = f"player{num}"
-                    val = float(getattr(form, name).data)
+                    player_name = f"player{num}"
+                    val = float(getattr(form, player_name).data)
                     tour.set_time(player, val)
                 # redirect to input to clear form state
                 kwargs = dict(name=name)
-                tour.save(str(tournament_path / (name + ".pkl")))
+                tour.save()
                 return redirect(url_for("run_tournament", **kwargs))
             else:
                 flash("Tournament complete!")

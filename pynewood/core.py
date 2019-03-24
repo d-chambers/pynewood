@@ -53,7 +53,7 @@ class LimitedRound(Tournament):
     number_of_plays = TournamentOption(type=int, valid_values=range(1, 100))
     rank_stat = TournamentOption(type=str, valid_values=AGGS)
 
-    _shake_ups = 10  # max number of times to shuffle players to avoid
+    _shake_ups = 100  # max number of times to shuffle players to avoid
 
     def __init__(
         self,
@@ -105,6 +105,7 @@ class LimitedRound(Tournament):
                 raise InvalidTournamentError(msg)
             self.df = self._create_df(players, players_at_once, number_of_plays)
             self._shake_ups -= 1
+            unique = self.get_next_matchups(100)
 
     def _create_df(self, players, players_at_once, number_of_plays) -> pd.DataFrame:
         """
