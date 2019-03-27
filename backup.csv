@@ -1,21 +1,53 @@
 ,player,round,heat,time
-0,jake,0,0,
-1,sue,0,0,
-2,bob,0,0,
-3,will,0,0,
-4,larry,0,1,
-5,will,1,1,
-6,sue,1,1,
-7,jake,1,1,
-8,larry,1,2,
-9,bob,1,2,
-10,will,2,2,
-11,jake,2,2,
-12,bob,2,3,
-13,larry,2,3,
-14,sue,2,3,
-15,will,3,3,
-16,bob,3,4,
-17,jake,3,4,
-18,sue,3,4,
-19,larry,3,4,
+0,Remmick Buchanan,0,0,1.0
+1,Luke Pedersen,0,0,1.0
+2,Ian Espiritu,0,0,1.0
+3,Jagger Willard,0,0,1.0
+4,David Nelson,0,1,2.0
+5,Josh Oliphant,0,1,2.0
+6,Coen Leavitt,0,1,2.0
+7,Samuel Kingsford,0,1,2.0
+8,Lincoln Kellogg,0,2,1.0
+9,Rowdy Carr,0,2,2.0
+10,Cade Passey,0,2,2.0
+11,Owen Webster,0,2,2.0
+12,Logan Burt,0,3,1.0
+13,Malachi Campbell,0,3,2.0
+14,Brycen Phillips,0,3,2.0
+15,Josh Olson,0,3,2.0
+16,Liam Ordaz,0,4,1.0
+17,David Kinsey,0,4,2.0
+18,Canyon Haws,0,4,2.0
+19,Marcus Liljenquist,0,4,2.0
+20,Bryton Borg,0,5,2.0
+21,Jesse Burt,0,5,22.0
+22,Taylor Schmutz,0,5,2.0
+23,Garrett West,0,5,2.0
+24,Logan Gardiner,0,6,2.0
+25,Cooper Borg,0,6,2.0
+26,Josh Olson,1,6,2.0
+27,Bryton Borg,1,6,2.0
+28,Ian Espiritu,1,7,3.0
+29,Canyon Haws,1,7,3.0
+30,Coen Leavitt,1,7,3.0
+31,Malachi Campbell,1,7,3.0
+32,David Nelson,1,8,1.0
+33,Liam Ordaz,1,8,1.0
+34,Owen Webster,1,8,1.0
+35,Cooper Borg,1,8,1.0
+36,Remmick Buchanan,1,9,3.0
+37,Jagger Willard,1,9,3.0
+38,Jesse Burt,1,9,3.0
+39,Samuel Kingsford,1,9,3.0
+40,Lincoln Kellogg,1,10,2.0
+41,Marcus Liljenquist,1,10,2.0
+42,Taylor Schmutz,1,10,2.0
+43,Cade Passey,1,10,2.0
+44,Logan Gardiner,1,11,1.0
+45,Rowdy Carr,1,11,1.0
+46,Brycen Phillips,1,11,1.0
+47,Josh Oliphant,1,11,1.0
+48,Logan Burt,1,12,1.0
+49,Garrett West,1,12,1.0
+50,David Kinsey,1,12,11.0
+51,Luke Pedersen,1,12,1.0

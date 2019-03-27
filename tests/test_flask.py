@@ -101,3 +101,5 @@ class TestRunStandardTournmant:
         # make sure all times are filled out
         df = self.current_df(name)
         assert not df["time"].isnull().any()
+        # Now undo and make sure last 4 where cleared
+        df = self.current_df(name)

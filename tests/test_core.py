@@ -152,3 +152,21 @@ class TestLimitedRound1:
         assert (dfs_equal).all().all()
         # ensure other attrs are equal
         assert lr1.players == lr2.players
+
+    def test_undo(self, lr_with_times):
+        """ tests for undoing last entry. """
+        df1 = lr_with_times.df.copy()
+        assert not df1.time.isnull().any()
+        lr_with_times.undo(1)
+        df2 = lr_with_times.df.copy()
+        inds = df2.index[-4:]
+        assert df2.loc[inds, "time"].isnull().all()
+
+    def test_rounds(self, lr_with_times):
+        df = lr_with_times.df.copy()
+        heat = lr_with_times.heat
+        assert heat == df.heat.max() + 1
+        assert lr_with_times.total_heats == df.heat.max() + 1
+        # now undo one, make sure heat is one less
+        lr_with_times.undo()
+        assert lr_with_times.heat == heat - 1

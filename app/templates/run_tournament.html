@@ -5,12 +5,15 @@
 {% block body %}
 
 <div id="wrapper">
+
     <form method="POST" action="{{ url_for('run_tournament', name=name, players=players) }}">
         <div class="c805">{{ name }}</div>
+        <div class="c805">{{ progress_string }}</div>
         <hr>
         <div style="height:100%; width:100%; overflow: hidden; display: flex">
 
             {{ form.csrf_token }}
+            <br><br>
             {% for player in matches[0] %}
                 <div style="float: left; width:25%; display: inline-flex";>
                 {{ form['player' + loop.index0|string()].label() }}
@@ -20,8 +23,11 @@
             {% endfor %}
             <br><br>
         </div>
+        <br><br>
             {{ form.submit }}
-            <br><br>
+
+            {{ undo_form.undo }}
+        <br><br>
     </form>
     {# Flash messages #}
     {% with messages = get_flashed_messages() %}

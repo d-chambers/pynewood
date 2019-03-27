@@ -48,6 +48,12 @@ def make_up_first_form(current_players):
 # --------------------- Forms
 
 
+class UndoEntry(FlaskForm):
+    """ A form for undoing. """
+
+    undo = wtforms.SubmitField(label="Undo")
+
+
 class NewTournamentForm(FlaskForm):
     """ A form for making a new tournament """
 
@@ -96,10 +102,17 @@ def run_tournament(name):
     else:
         return redirect(url_for("index"))
 
+    kwargs = dict(name=name)
     matches = tour.get_next_matchups(2)
 
     # create form
     form = make_up_first_form(matches[0] if len(matches) else [])
+    undo_form = UndoEntry()
+
+    # undo was clicked
+    if undo_form.undo.data:
+        tour.undo()
+        return redirect(url_for("run_tournament", **kwargs))
 
     # data is being submitted
     if request.method == "POST":
@@ -111,7 +124,6 @@ def run_tournament(name):
                     val = float(getattr(form, player_name).data)
                     tour.set_time(player, val)
                 # redirect to input to clear form state
-                kwargs = dict(name=name)
                 tour.save()
                 return redirect(url_for("run_tournament", **kwargs))
             else:
@@ -122,8 +134,15 @@ def run_tournament(name):
     # get table to display
     df = tour.get_ratings().round(decimals=3)
     car_table = df.to_html(classes="aTable")
-
-    kwargs = dict(matches=matches, form=form, name=name, car_table=car_table)
+    progress_string = f"{tour.heat} / {tour.total_heats}"
+    kwargs = dict(
+        matches=matches,
+        form=form,
+        name=name,
+        car_table=car_table,
+        undo_form=undo_form,
+        progress_string=progress_string,
+    )
     return render_template("run_tournament.html", **kwargs)
 
 

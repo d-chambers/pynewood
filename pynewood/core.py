@@ -133,6 +133,14 @@ class LimitedRound(Tournament):
         elif isinstance(item, str):
             return self.df[self.df["player"] == item]
 
+    def undo(self, number_of_rounds=1):
+        """ Undo the last n rounds. """
+        assert number_of_rounds > 0 and isinstance(number_of_rounds, int)
+        # get the indices that are not null
+        not_null = self.df[~self.df["time"].isnull()].index
+        inds = not_null[-number_of_rounds * self.players_per_round :]
+        self.df.loc[inds, "time"] = np.NaN
+
     def set_time(self, player, score, round=None):
         """ set a players score for a given round """
         df = self.df
@@ -161,6 +169,22 @@ class LimitedRound(Tournament):
         df.sort_values(self.rank_stat, inplace=True)
         df.insert(0, column="rank", value=range(1, len(df) + 1))
         return df.rename(columns={"size": "races"})
+
+    @property
+    def heat(self):
+        """ return the current heat number """
+        not_null = self.df[~self.df["time"].isnull()]
+        if not len(not_null):
+            return 0
+        elif len(not_null) == len(self.df):
+            return self.df.heat.max() + 1
+        else:
+            return not_null["heat"].max() + 1
+
+    @property
+    def total_heats(self):
+        """ return the total number of heats. """
+        return self.df.heat.max() + 1
 
     def save(self, path=None):
         super().save(path)
